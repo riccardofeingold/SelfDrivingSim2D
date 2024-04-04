@@ -1,6 +1,6 @@
 import pygame
 from objects import Car
-
+from Physics import Controls
 class Constants(object):
     WIDTH = 400
     HEIGHT = 200
@@ -17,6 +17,7 @@ class DrivingSim:
         self.game_over = False
         self.score = 0
         
+        self.controls = Controls()
         self.car = Car(self.width/2, self.height/2)
         
         pass
@@ -25,12 +26,12 @@ class DrivingSim:
         # to allow normal window quitting
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
+                pygame.quit()
+                quit()
+            
+            self.car.controls.keyboard_listener(event)
 
-        self.car.move()
-
-        # render
+        # render and move car
         self.render(self.display)
 
         self.clock.tick(Constants.FRAME_RATE)
