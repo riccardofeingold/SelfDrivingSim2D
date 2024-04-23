@@ -1,29 +1,26 @@
 import pygame
 import numpy as np
+from helpers import radians_to_degrees
 from Physics import Controls
-
-class Vector():
-    def __init__(self, init_x: float = 0, init_y: float = 0) -> None:
-        self.x: float = init_x
-        self.y: float = init_y
 
 class Car:
     def __init__(self, 
                  pos_x: float, 
-                 pos_y: float, 
-                 size_x: float = 10, 
-                 size_y: float = 30, 
-                 color: tuple = (0, 0, 0)) -> None:
+                 pos_y: float,
+                 size_x: float = 30, 
+                 size_y: float = 10, 
+                 color: tuple = (0, 0, 0)
+                 ) -> None:
+        
+        # TODO: Decide which variables are private/public
+        # PUBLIC
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.size_x = size_x
         self.size_y = size_y
         self.color = color
 
-        self.surface = pygame.Surface((size_x, size_y))
-        self.surface.fill(color)
-        self.rect = self.surface.get_rect()
-        self.rect.center = (self.size_x//2, self.size_y//2)
+        self.content_surface = pygame.Surface((size_x*2, size_y*2), pygame.SRCALPHA)
 
         self.max_speed = 3
         self.max_angle = np.pi/3
@@ -33,6 +30,8 @@ class Car:
         self.angle = np.pi/2
 
         self.controls = Controls()
+
+        # PRIVATE
         pass
 
     def _move(self):
@@ -68,13 +67,20 @@ class Car:
         self.pos_y += self.speed * np.sin(self.angle)
         self.pos_x += self.speed * np.cos(self.angle)
     
-    def rotate(self):
-        self.surface = pygame.transform.rotate(self.surface, self.angle)
-        self.rect = self.surface.get_rect()
-        self.rect.center = (self.pos_x, self.pos_y)
+    def _rotate(self, display: pygame.display):
+        self.content_surface.fill((0, 0, 255, 255)) # clear with tranparent color
+        self._draw_car()
+        rotated_surface = pygame.transform.rotate(self.content_surface, radians_to_degrees(-self.angle))
+        rotated_rect = rotated_surface.get_rect(center=(self.pos_x + self.size_x // 2, self.pos_y + self.size_y // 2))
+        display.blit(rotated_surface, rotated_rect)
+        
+    def _draw_car(self):
+        pygame.draw.rect(self.content_surface, self.color, pygame.Rect(self.size_x//2, self.size_y//2, self.size_x, self.size_y))
+        pygame.draw.rect(self.content_surface, (0, 255, 0), pygame.Rect(0, 0, self.size_y//2, self.size_y//2))
+        pygame.draw.rect(self.content_surface, (0, 255, 0), pygame.Rect(0, 1.5*self.size_y, self.size_y//2, self.size_y//2))
+        pygame.draw.rect(self.content_surface, (255, 0, 0), pygame.Rect(1.5*self.size_x + self.size_y, 0, self.size_y//2, self.size_y//2))
+        pygame.draw.rect(self.content_surface, (255, 0, 0), pygame.Rect(1.5*self.size_x + self.size_y, 1.5*self.size_y, self.size_y//2, self.size_y//2))
 
     def draw(self, display: pygame.display):
         self._move()
-        # self.rotate()
-        # display.blit(self.surface, self.rect)
-        pygame.draw.rect(display, self.color, pygame.Rect(self.pos_x, self.pos_y, self.size_x, self.size_y))
+        self._rotate(display)

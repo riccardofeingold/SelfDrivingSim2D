@@ -2,8 +2,8 @@ import pygame
 from objects import Car
 from Physics import Controls
 class Constants(object):
-    WIDTH = 400
-    HEIGHT = 200
+    WIDTH = 800
+    HEIGHT = 600
     FRAME_RATE = 40
 
 class DrivingSim:
