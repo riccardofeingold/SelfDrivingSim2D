@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
 import pygame
-from objects import Car
+from objects import Car, Road
 from Physics import Controls
 class Constants(object):
     WIDTH = 800
     HEIGHT = 600
     FRAME_RATE = 40
+    ROAD_WIDTH = 10
+    NUMBER_OF_LANES = 7
 
 class DrivingSim:
     def __init__(self, height: int = Constants.WIDTH, width: int = Constants.HEIGHT, human: bool = True) -> None:
@@ -21,7 +23,7 @@ class DrivingSim:
         
         self.controls = Controls()
         self.car = Car(self.width/2, self.height/2)
-        
+        self.road = Road(width=Constants.ROAD_WIDTH)
         pass
 
     def step(self):
@@ -32,7 +34,8 @@ class DrivingSim:
                 quit()
             
             self.car.controls.keyboard_listener(event)
-
+            self.road.controls.mouse_listener(event)
+            
         # render and move car
         self.render(self.display)
 
@@ -41,8 +44,8 @@ class DrivingSim:
 
     def render(self, display: pygame.display):
         self.display.fill((255, 255, 255))
+        self.road.draw(display=display)
         self.car.draw(display=display)
-
         pygame.display.flip()
         pass
 

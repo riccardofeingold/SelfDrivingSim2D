@@ -11,3 +11,6 @@ def radians_to_degrees(radians: float):
 
 def degrees_to_radians(degrees: float):
     return degrees * np.pi / 180
+
+def linear_function(start, end, step_size):
+    return start + (end - start) * step_size
